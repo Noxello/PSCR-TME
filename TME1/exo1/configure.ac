@@ -21,8 +21,7 @@ AC_PROG_CC
 AC_PROG_CXX
 AC_LANG(C++)
 
-AC_CONFIG_FILES([   Makefile
-                    src/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile])
 
 # Do it !! (mandatory)
 AC_OUTPUT
