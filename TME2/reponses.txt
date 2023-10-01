@@ -1,0 +1,30 @@
+1/ 566193 mots en tout.
+
+2/ Voir main_vector_sans_occurences.cpp pour le code.
+20333 mots différents.
+
+3/ Voir main_vector_avec_occurences.cpp pour le code.
+298 occurences de "war"
+114 occurences de "peace
+0 occurences de "toto"
+
+4/ Rechercher la présence d'un élément dans une liste chainée est en O(n) avec n le nombre d'élements.
+Le programme au complet a donc une complexité quadratique.
+On pourrait utiliser une table de hashage, std::unordered_map dans la lib standard.
+
+5/ Voir hashtable.hpp pour le code.
+
+6/ voir main_hashtable.cpp pour le code.
+
+7 et 8/ voir main_tri.cpp
+Les dix mots les plus utilisés et leurs occurences :
+the 34562
+and 22148
+to 16709
+of 14990
+a 10513
+he 9809
+in 8800
+his 7965
+that 7806
+was 7327
