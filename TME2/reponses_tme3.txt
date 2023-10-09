@@ -1,0 +1,19 @@
+1 et 2/
+Voir algorithm.hpp
+
+3/
+Voir main_algorithm.cpp
+Le print montre bien que le nobmre de mots est exact
+
+4/
+Voir hashtable.hpp
+
+5 et 6/
+Voir main_algorithm.cpp
+
+7 et 8/
+Void main_unordered_map.cpp
+
+9/
+On crée une table de hash qui associe a un n-upplet d'attributs une liste de personnes.
+Exemple : (age, sexe, ville) -> liste<Personnes>

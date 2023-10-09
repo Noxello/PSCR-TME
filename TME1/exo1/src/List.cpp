@@ -65,7 +65,56 @@ namespace pr {
 		os << "]";
 		return os;
 	}
+	class iterator{
+		Chainon* current;
 
+		iterator(Chainon* curren): current(current){}
+		
+		iterator &operator++(){
+			current = current->next;
+			return *this;
+		}
+		std::string& operator*(){
+			return current->data;
+		}
+		std::string* operator->(){
+			return &(current->data);
+		}
+		bool operator!=(const iterator &other){
+			return current != other.current;
+		}
+		iterator begin(){
+			return iterator(tete);
+		}
+		iterator end(){
+			return iterator(nullptr);
+		}
+	}
+	class const_iterator{
+		//const
+
+		const_iterator(Chainon* curren): current(current){}
+		
+		const const_iterator &operator++(){
+			current = current->next;
+			return *this;
+		}
+		const std::string& operator*(){
+			return current->data;
+		}
+		const std::string* operator->(){
+			return &(current->data);
+		}
+		bool operator!=(const const_iterator &other){
+			return current != other.current;
+		}
+		const_iterator begin(){
+			return iterator(tete);
+		}
+		const_iterator end(){
+			return iterator(nullptr);
+		}
+	}
 } // namespace pr
 
 
