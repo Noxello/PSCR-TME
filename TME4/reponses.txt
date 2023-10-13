@@ -1,0 +1,41 @@
+1/ voir main.cpp
+
+2/ Le comportement n'est pas correct.
+Par exemple supposons que les threads suivant effectuent les actions:
+T1 : A envoie 10€ à B
+T2 : B envoie 10€ à C 
+Avec b qui a initialement 0€ et T1 lancé avant T2
+
+Le comportement voulu serait:
+debiter A
+crediter B
+debiter B
+crediter A
+
+Or on n'a comme seule garantie que debiter A précède crediter B et crediter B précide crediter A
+On pourrait alors avoir 
+
+debiter A
+debiter B
+crediter B
+
+Dans ce cas le transfert de 10€ de B à C échoue.
+
+4/ L'idée serait de récupérer les mutex au niveau de transfert et de protéger les comptes pendant toute la transaction.
+
+5/ Le programme se bloque car le mutex est aussi demandé pour créditer ou débiter. On a donc crée un interblocage entre les fonctions transférer et créditer/débiter
+
+6/ On n'a pas vraiment résolu le problème.
+
+Supposons les transactions suivantes effectuées par des threads differents:
+T1 : A envoie a B
+T2 : B envoie a C
+T3 : C envoie a A
+
+Même en utilisant std::lock qui garantie un ordre sur l'obtention de plusieurs verrous (par exemple A<B<C),
+rien n'empêche T1 d'obtenir le verrou de A, T2 d'obtenir celui de B et T3 d'obtenir celui de C.
+
+Une solution serait donc de protéger l'obtention des verrous des comptes au niveau de la transaction.
+On ajoute donc un verrou a la classe Banque pour cela.
+
+7/ Non car les sommes presentes sur le comptes pourraient etre modifiées alors qu'on itère sur ces derniers.
