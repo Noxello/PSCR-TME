@@ -14,6 +14,7 @@
 using namespace std;
 using namespace pr;
 
+#define NB_THREADS 8
 
 
 void fillScene(Scene & scene, default_random_engine & re) {
@@ -145,6 +146,47 @@ class SceneJobPixel : public pr::Job {
 			}
 };
 
+class SceneJobLigne : public pr::Job {
+		int x;
+		Scene &scene;
+		pr::Barrier &barrier;
+		Color * pixels;
+		vector<Vec3D> &lights;
+
+		public:
+			SceneJobLigne(int x, Scene &scene,pr::Barrier &b,  Color * pixels, vector<Vec3D> &lights)
+				: x(x), scene(scene), barrier(b),pixels(pixels), lights(lights){}
+
+			void calcul(){
+				const Scene::screen_t & screen = scene.getScreenPoints();
+
+				for (int  y = 0 ; y < scene.getHeight() ; y++){
+					// le point de l'ecran par lequel passe ce rayon
+					auto & screenPoint = screen[y][x];
+					// le rayon a inspecter
+					Rayon  ray(scene.getCameraPos(), screenPoint);
+
+					int targetSphere = findClosestInter(scene, ray);
+
+					if (!(targetSphere == -1)) {
+						// keep background color if no target sphere
+
+						const Sphere & obj = *(scene.begin() + targetSphere);
+						// pixel prend la couleur de l'objet
+						Color finalcolor = computeColor(obj, ray, scene.getCameraPos(), lights);
+						// le point de l'image (pixel) dont on vient de calculer la couleur
+						Color & pixel = pixels[y*scene.getHeight() + x];
+						// mettre a jour la couleur du pixel dans l'image finale.
+						pixel = finalcolor;
+					}
+					barrier.done();
+				}
+			}
+			void run(){
+				calcul();
+			}
+};
+
 int main () {
 
 	std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
@@ -166,19 +208,27 @@ int main () {
 	Color * pixels = new Color[scene.getWidth() * scene.getHeight()];
 
 	pr::Pool pool(2000);
-	pool.start(16);
+	pool.start(NB_THREADS);
 	
 	int nbJobs = scene.getWidth() * scene.getHeight();
 	pr::Barrier b(nbJobs);
-	// pour chaque pixel, calculer sa couleur
-	for (int x =0 ; x < scene.getWidth() ; x++) {
-		for (int  y = 0 ; y < scene.getHeight() ; y++) {
-			pool.submit(new SceneJobPixel(x, y, scene, b, pixels, lights));
 
-		}
+	// Jobs Pour chaque pixel
+	// for (int x =0 ; x < scene.getWidth() ; x++) {
+	// 	for (int  y = 0 ; y < scene.getHeight() ; y++) {
+	// 		pool.submit(new SceneJobPixel(x, y, scene, b, pixels, lights));
+
+	// 	}
+	// }
+
+	// Jobs pour chaque ligne
+	for (int x =0 ; x < scene.getWidth() ; x++) {
+		pool.submit(new SceneJobLigne(x, scene, b, pixels, lights));
 	}
+
 	b.wait();
 	pool.stop();
+
 	std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 	    std::cout << "Total time "
 	              << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()

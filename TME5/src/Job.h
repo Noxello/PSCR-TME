@@ -37,9 +37,4 @@ namespace pr {
 		~SleepJob(){}
 	};
 
-	
-	class SceneJobLigne : public Job{
-
-	};
-
 }
