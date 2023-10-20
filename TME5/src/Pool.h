@@ -7,15 +7,15 @@
 
 namespace pr {
 
-class Pool {
-	Queue<Job> queue;
-	std::vector<std::thread> threads;
-public:
-	Pool(int qsize) ;
-	void start (int nbthread);
-	void submit (Job * job) ;
-	void stop() ;
-	~Pool() ;
-};
+	class Pool {
+		Queue<Job> queue;
+		std::vector<std::thread> threads;
+	public:
+		Pool(int qsize) ;
+		void start (int nbthread);
+		void submit (Job * job) ;
+		void stop() ;
+		~Pool(){};
+	};
 
 }
