@@ -1,19 +1,49 @@
 #include "Semaphore.h"
 #include <thread>
 #include <vector>
-
+#include <atomic>
 // TODO : classe à modifier
 class Data {
 	std::vector<int> values;
+	mutable pr::Semaphore sRead;
+	mutable std::atomic<bool> isWriting;
+	mutable std::atomic<int> cptReading;
+	mutable std::mutex m;
+	mutable std::condition_variable cv;
+
 public :
+	Data(): sRead(256), isWriting(false), cptReading(0) {}
+
 	int read() const {
+		sRead.acquire(1);
+
+		std::unique_lock<std::mutex> l(m);
+		while(isWriting){
+			cv.wait(l);
+		}
+		cptReading++;
+		l.unlock();
+
+		int res;
 		if (values.empty())
-			return 0;
+			res = 0;
 		else
-			return values[rand()%values.size()];
+			res = values[rand()%values.size()];
+
+		cptReading--;
+		sRead.release(1);
+		cv.notify_all();
+		return res;
 	}
 	void write() {
+		std::unique_lock<std::mutex> l(m);
+		while(cptReading != 0){
+			cv.wait(l);
+		}
+		isWriting = true;
 		values.push_back(rand());
+		isWriting = false;
+		cv.notify_all();
 	}
 };
 
@@ -29,7 +59,7 @@ void worker(Data & data) {
 	}
 }
 
-int main2 () {
+int main () {
 	// a faire varier
 	const int NBTHREAD=10;
 

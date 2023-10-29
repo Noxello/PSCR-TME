@@ -1,0 +1,14 @@
+1/ 10 processus sont crées en tout (en incluant le principal)
+voir arbre.pdf pour l'arbre avec les print
+
+2/ voir fork_exo.cpp
+
+4/ nanosleep endors le processus jusqu'a ce que
+- le processus se reveille car il recoit un signal
+- le processus a dormi le temps voulu
+
+La boucle permet d'assurer que le processus dors bien tout le temps
+voulu même s'il est réveillé par un signal (une attaque)
+
+6/ non car sigsuspend permet de passer une plus grande proportion de temps
+d'execution protégé des signaux
