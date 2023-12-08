@@ -6,7 +6,7 @@
 #include <signal.h>
 #include "rsleep.h"
 
-int vie = 3;
+int vie = 5;
 
 using namespace std;
 
